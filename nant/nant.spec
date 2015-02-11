@@ -15,6 +15,13 @@ BuildRequires: gcc libtool bison gettext make bzip2 automake gcc-c++ patch mono 
 BuildRoot: /tmp/buildroot
 Source: %{NantGitTimestamp}.tar.gz
 
+# In bootstrap mode, filter requires of the prebuilt DLLs. Some of these
+# require older mono runtime, creating broken rpm deps.
+%filter_requires_in %{_prefix}/lib/NAnt/
+# Also filter provides of the prebuilt DLLs
+%filter_provides_in %{_prefix}/lib/NAnt/
+%filter_setup
+
 %description
 some development tools for Mono
 
