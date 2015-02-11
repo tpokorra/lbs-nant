@@ -24,7 +24,6 @@ some development tools for Mono
 
 %build
 # Configure and make source
-. %{MonoPath}/env.sh
 make prefix=%{MonoPath}
 
 %install
