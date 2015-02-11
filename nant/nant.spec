@@ -11,7 +11,7 @@ Packager: Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 License: GPL
 Group: Development
 AutoReqProv: no
-Requires: pkgconfig mono mono-devel libgdiplus libgdiplus-devel liberation-mono-fonts
+Requires: pkgconfig mono mono-devel libgdiplus0 libgdiplus-devel liberation-mono-fonts
 BuildRequires: gcc libtool bison gettext make bzip2 automake gcc-c++ patch mono mono-devel pkgconfig
 BuildRoot: /tmp/buildroot
 Source: %{NantGitTimestamp}.tar.gz
@@ -38,6 +38,8 @@ make prefix=%{MonoPath}
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} install prefix=%{MonoPath}
 sed -i 's#/bin/mono#/bin/mono --runtime=v4.0#g' %{buildroot}%{MonoPath}/bin/nant
+chmod 555 %{buildroot}%{MonoPath}/bin
+chmod 555 %{buildroot}%{MonoPath}/lib
 
 %clean
 # Clean up after ourselves, but be careful in case someone sets a bad buildroot
