@@ -1,4 +1,7 @@
 lbs:
+  fedora:
+    '21':
+      repos: ['http://download.mono-project.com/repo/centos/']
   centos:
     '6':
       repos: ['http://download.mono-project.com/repo/centos/']
