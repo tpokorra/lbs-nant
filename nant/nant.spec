@@ -30,6 +30,14 @@ some development tools for Mono
 [ -d $RPM_BUILD_ROOT ] && [ "/" != "$RPM_BUILD_ROOT" ] && rm -rf $RPM_BUILD_ROOT
 %setup  -q -n nant-%{NantGitTimestamp}
 
+#Fixes for Mono 4
+sed -i "s#gmcs#mcs#g" Makefile
+sed -i "s#TARGET=mono-2.0#TARGET=mono-4.0#g" Makefile
+sed -i "s#mono/4.0#mono/4.5#g" src/NAnt.Console/App.config
+sed -i "s#dmcs#mcs#g" src/NAnt.Console/App.config
+find . -name "*.sln" -print -exec sed -i 's/Format Version 10.00/Format Version 11.00/g' {} \;
+find . -name "*.csproj" -print -exec sed -i 's#ToolsVersion="3.5"#ToolsVersion="4.0"#g; s#<TargetFrameworkVersion>.*</TargetFrameworkVersion>##g; s#<PropertyGroup>#<PropertyGroup><TargetFrameworkVersion>v4.5</TargetFrameworkVersion>#g' {} \;
+
 %build
 # Configure and make source
 make prefix=%{MonoPath}
