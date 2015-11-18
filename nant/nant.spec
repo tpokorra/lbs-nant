@@ -15,6 +15,7 @@ Requires: pkgconfig mono mono-devel libgdiplus0 libgdiplus-devel liberation-mono
 BuildRequires: gcc libtool bison gettext make bzip2 automake gcc-c++ patch mono mono-devel pkgconfig
 BuildRoot: /tmp/buildroot
 Source: %{NantGitTimestamp}.tar.gz
+Patch1: nant-fixmono42_scripttask.patch
 
 # In bootstrap mode, filter requires of the prebuilt DLLs. Some of these
 # require older mono runtime, creating broken rpm deps.
@@ -29,6 +30,7 @@ some development tools for Mono
 %prep
 [ -d $RPM_BUILD_ROOT ] && [ "/" != "$RPM_BUILD_ROOT" ] && rm -rf $RPM_BUILD_ROOT
 %setup  -q -n nant-%{NantGitTimestamp}
+%patch1 -p1
 
 #Fixes for Mono 4
 sed -i "s#gmcs#mcs#g" Makefile
@@ -59,6 +61,8 @@ chmod 555 %{buildroot}%{MonoPath}/lib
 %post
 
 %changelog
+* Wed Nov 18 2015 Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+- fix for Mono 4.2 for compiling ScriptTasks (see https://github.com/openpetra/openpetra/issues/109)
 * Wed Feb 11 2015 Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 - build for Xamarin Mono packages
 * Thu Jun 19 2014 Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
