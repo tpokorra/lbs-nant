@@ -1,0 +1,12 @@
+diff -uNr nant-0.92.old/tests/NAnt.Core/NAnt.Core.build nant-0.92/tests/NAnt.Core/NAnt.Core.build
+--- nant-0.92.old/tests/NAnt.Core/NAnt.Core.build	2015-07-16 10:11:50.920933776 +0200
++++ nant-0.92/tests/NAnt.Core/NAnt.Core.build	2015-07-16 10:12:16.232932593 +0200
+@@ -22,7 +22,6 @@
+             </sources>
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+-                <include name="${nant::scan-probing-paths('netDumbster.dll')}" />
+             </references>
+             <pkg-references>
+                 <package name="nunit"/>
+
