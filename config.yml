@@ -1,11 +1,4 @@
 lbs:
-  fedora:
-    '21':
-      repos: ['http://download.mono-project.com/repo/centos/']
-    '22':
-      repos: ['http://download.mono-project.com/repo/centos/']
   centos:
-    '6':
-      repos: ['http://download.mono-project.com/repo/centos/']
     '7':
-      repos: ['http://download.mono-project.com/repo/centos/']
+      repos: ['http://download.mono-project.com/repo/centos/', 'https://copr.fedoraproject.org/coprs/tpokorra/mono/repo/epel-7/tpokorra-mono-epel-7.repo']
