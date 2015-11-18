@@ -1,3 +1,4 @@
 lbs:
   source:
-    download: ["http://sourceforge.net/projects/nant/files/nant/0.92/nant-0.92-src.tar.gz/download"]
+    download:
+      nant-0.92-src.tar.gz: "http://sourceforge.net/projects/nant/files/nant/0.92/nant-0.92-src.tar.gz/download"
