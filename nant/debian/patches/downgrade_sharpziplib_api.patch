@@ -1,0 +1,41 @@
+From: Debian CLI Applications Team <pkg-cli-apps-team@lists.alioth.debian.org>
+Date: Sat, 26 May 2012 12:53:33 +0200
+Subject: downgrade_sharpziplib_api
+
+===================================================================
+---
+ src/NAnt.Compression/Tasks/TarTask.cs |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/NAnt.Compression/Tasks/TarTask.cs b/src/NAnt.Compression/Tasks/TarTask.cs
+index 50f0b0d..da28a97 100644
+--- a/src/NAnt.Compression/Tasks/TarTask.cs
++++ b/src/NAnt.Compression/Tasks/TarTask.cs
+@@ -160,7 +160,7 @@ namespace NAnt.Compression.Tasks {
+ 
+                 // do not use convert line endings of text files to \n, as this
+                 // converts all content to ASCII
+-                archive.AsciiTranslate = false;
++                archive.SetAsciiTranslation (false);
+ 
+                 // process all filesets
+                 foreach (TarFileSet fileset in TarFileSets) {
+@@ -268,7 +268,7 @@ namespace NAnt.Compression.Tasks {
+                 }
+ 
+                 // close the tar archive
+-                archive.Close();
++                archive.CloseArchive();
+             } catch (Exception ex) {
+                 // close the tar output stream
+                 if (outstream != null) {
+@@ -277,7 +277,7 @@ namespace NAnt.Compression.Tasks {
+ 
+                 // close the tar archive
+                 if (archive != null) {
+-                    archive.Close();
++                    archive.CloseArchive();
+                 }
+ 
+                 // delete the (possibly corrupt) tar file
+-- 

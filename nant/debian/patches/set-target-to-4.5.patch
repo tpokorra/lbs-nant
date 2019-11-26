@@ -1,0 +1,14 @@
+Description: target 4.5 mono 
+Author: Dimitri John Ledkov <xnox@ubuntu.com>
+
+--- nant-0.92~rc1+dfsg.orig/Makefile
++++ nant-0.92~rc1+dfsg/Makefile
+@@ -2,7 +2,7 @@
+ MONO=cli
+ MCS=mono-csc
+ RESGEN=resgen
+-TARGET=mono-4.0
++TARGET=mono-4.5
+ 
+ # Contains a list of acceptable targets used to build NAnt
+ VALID_TARGETS := mono-2.0 mono-3.5 mono-4.0 mono-4.5 net-2.0 net-3.5 net-4.0 net-4.5

@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+
+MAKE_FLAGS = MONO=/usr/bin/cli MCS=/usr/bin/mono-csc
+
+override_dh_auto_build:
+	$(MAKE) $(MAKE_FLAGS)
+
+override_dh_auto_install:
+	$(MAKE) $(MAKE_FLAGS) prefix=/usr DESTDIR=$(CURDIR)/debian/nant install
+	rmdir --ignore-fail-on-non-empty --parents debian/nant
+
+%:
+	dh $@ --with cli
+
+DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([^-\+]+)+(\+dfsg)*.*,\1,p')
+
+get-orig-source:
+	uscan --force-download --destdir=. --download-version=$(DEB_UPSTREAM_VERSION)
+	tar xfz nant-$(DEB_UPSTREAM_VERSION)-src.tar.gz
+	find nant-$(DEB_UPSTREAM_VERSION)/ -name "*.dll" -delete
+	find nant-$(DEB_UPSTREAM_VERSION)/ -name "*.exe" -delete
+	tar cfz nant_$(DEB_UPSTREAM_VERSION)~rc1+dfsg.orig.tar.gz nant-$(DEB_UPSTREAM_VERSION)/
+	rm -rf nant-$(DEB_UPSTREAM_VERSION)/

@@ -1,0 +1,218 @@
+--- a/Makefile
++++ b/Makefile
+@@ -5,7 +5,7 @@
+ TARGET=mono-4.0
+ 
+ # Contains a list of acceptable targets used to build NAnt
+-VALID_TARGETS := mono-2.0 mono-3.5 mono-4.0 net-2.0 net-3.5 net-4.0
++VALID_TARGETS := mono-2.0 mono-3.5 mono-4.0 mono-4.5 net-2.0 net-3.5 net-4.0 net-4.5
+ 
+ ifndef DIRSEP
+ ifeq ($(OS),Windows_NT)
+@@ -55,6 +55,11 @@
+ DEFINE := $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,ONLY_4_0
+ endif
+ 
++# Loads (net,mono)-4.5 DEFINE vars
++ifeq ($(findstring 4.5,$(SELECTED_TARGET)),4.5)
++DEFINE := $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5
++endif
++
+ # If TARGET var is invalid, throw an error
+ else
+ $(error Specified target "$(TARGET)" is not valid)
+@@ -69,7 +74,7 @@
+ TARGET_FRAMEWORK = -t:$(TARGET)
+ NANT = $(MONO) bootstrap/NAnt.exe $(NANT_DEBUG)
+ 
+-
++# Targets
+ all: bootstrap build-nant
+ 
+ build-nant: 
+--- a/Makefile.nmake
++++ b/Makefile.nmake
+@@ -17,6 +17,8 @@
+ DEFINE = $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,ONLY_3_5
+ !else if "$(TARGET)" == "net-4.0" || "$(TARGET)" == "mono-4.0"
+ DEFINE = $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,ONLY_4_0
++!else if "$(TARGET)" == "net-4.5" || "$(TARGET)" == "mono-4.5"
++DEFINE = $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5
+ !else
+ !error Specified target "$(TARGET)" is not valid
+ !endif
+--- a/NAnt.build
++++ b/NAnt.build
+@@ -755,6 +755,12 @@
+         <property name="link.sdkdoc.version" value="SDK_v1_1" />
+         <property name="link.sdkdoc.web" value="true" />
+     </target>
++    <target name="set-net-4.5-framework-configuration">
++        <property name="nant.settings.currentframework" value="net-4.5" />
++        <property name="current.build.defines" value="${build.defines}NET,NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5" dynamic="true" />
++        <property name="link.sdkdoc.version" value="SDK_v1_1" />
++        <property name="link.sdkdoc.web" value="true" />
++    </target>
+     <target name="set-mono-2.0-framework-configuration">
+         <property name="nant.settings.currentframework" value="mono-2.0" />
+         <property name="current.build.defines" value="${build.defines}MONO,NET_1_0,NET_1_1,NET_2_0,ONLY_2_0" dynamic="true" />
+@@ -773,6 +779,12 @@
+         <property name="link.sdkdoc.version" value="SDK_v1_1" />
+         <property name="link.sdkdoc.web" value="true" />
+     </target>
++    <target name="set-mono-4.5-framework-configuration">
++        <property name="nant.settings.currentframework" value="mono-4.5" />
++        <property name="current.build.defines" value="${build.defines}MONO,NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5" dynamic="true" />
++        <property name="link.sdkdoc.version" value="SDK_v1_1" />
++        <property name="link.sdkdoc.web" value="true" />
++    </target>
+ 
+     <!-- install targets -->
+ 
+--- a/src/NAnt.Console/App.config
++++ b/src/NAnt.Console/App.config
+@@ -886,6 +886,133 @@
+                         </task>
+                     </tasks>
+                 </framework>
++                <framework
++                    name="net-4.5"
++                    family="net"
++                    version="4.5"
++                    description="Microsoft .NET Framework 4.5"
++                    sdkdirectory="${sdkInstallRoot}"
++                    frameworkdirectory="${path::combine(installRoot, 'v4.0.30319')}"
++                    frameworkassemblydirectory="${path::combine(installRoot, 'v4.0.30319')}"
++                    clrversion="4.0.30319"
++                    clrtype="Desktop"
++                    vendor="Microsoft"
++                    >
++                    <runtime>
++                        <probing-paths>
++                            <directory name="lib/common/2.0" />
++                            <directory name="lib/common/neutral" />
++                        </probing-paths>
++                        <modes>
++                            <strict>
++                                <environment>
++                                    <variable name="COMPLUS_VERSION" value="v4.0.30319" />
++                                </environment>
++                            </strict>
++                        </modes>
++                    </runtime>
++                    <reference-assemblies basedir="${path::combine(installRoot, 'v4.0.30319')}">
++                        <include name="Accessibility.dll" />
++                        <include name="Microsoft.Build.Conversion.v4.0.dll" />
++                        <include name="Microsoft.Build.dll" />
++                        <include name="Microsoft.Build.Engine.dll" />
++                        <include name="Microsoft.Build.Framework.dll" />
++                        <include name="Microsoft.Build.Tasks.v4.0.dll" />
++                        <include name="Microsoft.Build.Utilities.v4.0.dll" />
++                        <include name="Microsoft.CSharp.dll" />
++                        <include name="Microsoft.Data.Entity.Build.Tasks.dll" />
++                        <include name="Microsoft.JScript.dll" />
++                        <include name="Microsoft.Transactions.Bridge.dll" />
++                        <include name="Microsoft.Transactions.Bridge.Dtc.dll" />
++                        <include name="Microsoft.VisualBasic.Activities.Compiler.dll" />
++                        <include name="Microsoft.VisualBasic.Compatibility.Data.dll" />
++                        <include name="Microsoft.VisualBasic.Compatibility.dll" />
++                        <include name="Microsoft.VisualBasic.dll" />
++                        <include name="Microsoft.VisualC.dll" />
++                        <include name="Microsoft.VisualC.STLCLR.dll" />
++                        <include name="mscorlib.dll" />
++                        <include name="System*.dll" />
++                    </reference-assemblies>
++                    <!-- WPF Assemblies -->
++                    <reference-assemblies basedir="${path::combine(installRoot, 'v4.0.30319')}/WPF">
++                        <include name="*.dll" />
++                    </reference-assemblies>
++                    <reference-assemblies basedir="${environment::get-folder-path('ProgramFiles')}/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.5">
++                        <include name="Microsoft*.dll" />
++                        <include name="mscorlib.dll" />
++                        <include name="PresentationBuildTasks.dll" />
++                        <include name="PresentationCore.dll" />
++                        <include name="WindowsBase.dll" />
++                        <include name="PresentationFramework*.dll" />
++                        <include name="ReachFramework.dll" />
++                        <include name="System*.dll" />
++                    </reference-assemblies>
++                    <task-assemblies>
++                        <!-- include MS.NET version-neutral assemblies -->
++                        <include name="extensions/net/neutral/**/*.dll" />
++                        <!-- include MS.NET 4.0 specific assemblies -->
++                        <include name="extensions/net/4.0/**/*.dll" />
++                        <!-- include MS.NET specific task assembly -->
++                        <include name="NAnt.MSNetTasks.dll" />
++                        <!-- include MS.NET specific test assembly -->
++                        <include name="NAnt.MSNet.Tests.dll" />
++                        <!-- include .NET 4.0 specific assemblies -->
++                        <include name="extensions/common/4.0/**/*.dll" />
++                    </task-assemblies>
++                    <tool-paths>
++                        <directory name="${sdkInstallRoot}"
++                            if="${property::exists('sdkInstallRoot')}" />
++                        <directory name="${path::combine(installRoot, 'v4.0.30319')}" />
++                    </tool-paths>
++                    <project>
++                        <readregistry
++                            property="installRoot"
++                            key="SOFTWARE\Microsoft\.NETFramework\InstallRoot"
++                            hive="LocalMachine" />
++                        <locatesdk property="sdkInstallRoot" minwinsdkver="v7.0A" minnetfxver="4.0" maxnetfxver="4.0.99999" failonerror="false" />
++                    </project>
++                    <tasks>
++                        <task name="csc">
++                            <attribute name="supportsnowarnlist">true</attribute>
++                            <attribute name="supportswarnaserrorlist">true</attribute>
++                            <attribute name="supportskeycontainer">true</attribute>
++                            <attribute name="supportskeyfile">true</attribute>
++                            <attribute name="supportsdelaysign">true</attribute>
++                            <attribute name="supportsplatform">true</attribute>
++                            <attribute name="supportslangversion">true</attribute>
++                        </task>
++                        <task name="vbc">
++                            <attribute name="supportsdocgeneration">true</attribute>
++                            <attribute name="supportsnostdlib">true</attribute>
++                            <attribute name="supportsnowarnlist">true</attribute>
++                            <attribute name="supportskeycontainer">true</attribute>
++                            <attribute name="supportskeyfile">true</attribute>
++                            <attribute name="supportsdelaysign">true</attribute>
++                            <attribute name="supportsplatform">true</attribute>
++                            <attribute name="supportswarnaserrorlist">true</attribute>
++                        </task>
++                        <task name="jsc">
++                            <attribute name="supportsplatform">true</attribute>
++                        </task>
++                        <task name="vjc">
++                            <attribute name="supportsnowarnlist">true</attribute>
++                            <attribute name="supportskeycontainer">true</attribute>
++                            <attribute name="supportskeyfile">true</attribute>
++                            <attribute name="supportsdelaysign">true</attribute>
++                        </task>
++                        <task name="resgen">
++                            <attribute name="supportsassemblyreferences">true</attribute>
++                            <attribute name="supportsexternalfilereferences">true</attribute>
++                        </task>
++                        <task name="delay-sign">
++                            <attribute name="exename">sn</attribute>
++                        </task>
++                        <task name="license">
++                            <attribute name="exename">lc</attribute>
++                            <attribute name="supportsassemblyreferences">true</attribute>
++                        </task>
++                    </tasks>
++                </framework>
+                 <framework 
+                     name="netcf-1.0"
+                     family="netcf"
+--- a/src/NAnt.Core/FrameworkInfo.cs
++++ b/src/NAnt.Core/FrameworkInfo.cs
+@@ -315,6 +315,8 @@
+                         return new Version(8, 0);
+                     case "4.0":
+                         return new Version(10, 0);
++                    case "4.5":
++                        return new Version(11, 0);
+                     default:
+                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                             ResourceUtils.GetString("NA1055"),

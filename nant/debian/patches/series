@@ -1,0 +1,13 @@
+downgrade_sharpziplib_api.patch
+add_support_for_mono_4.0_profile.patch
+000-fix_build_system.patch
+001-nant-task-cs-InitializeElement.patch
+002-nant-load-partial-name.patch
+003-nant-use-system-dlls.patch
+006-nant-dont-build-ndoc-support.patch
+remove-netDumbster.patch
+lowercase-docdir.patch
+use_mono_mcs_common_compiler_infrastructure.patch
+9d7f1937978c17be116292352f124b1de83518e9..721a715ff411fdc385306676f1104eb0608c3dc3.diff
+set-target-to-4.5.patch
+0001-Add-initial-support-for-mono-4.5-on-unix.-Untested.patch

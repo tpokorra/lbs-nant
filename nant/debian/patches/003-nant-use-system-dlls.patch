@@ -1,0 +1,371 @@
+From: Debian CLI Applications Team <pkg-cli-apps-team@lists.alioth.debian.org>
+Date: Sat, 26 May 2012 12:43:20 +0200
+Subject: 003-nant-use-system-dlls
+
+@DPATCH@
+---
+ Makefile                                          |   10 +++----
+ NAnt.build                                        |    2 --
+ src/NAnt.Compression/NAnt.Compression.build       |    2 +-
+ src/NAnt.Console/NAnt.Console.build               |    4 ++-
+ src/NAnt.Core/NAnt.Core.build                     |    4 ++-
+ src/NAnt.DotNet/NAnt.DotNet.build                 |    4 +--
+ src/NAnt.NUnit/NAnt.NUnit.build                   |   31 ++++-----------------
+ src/NAnt.SourceControl/NAnt.SourceControl.build   |    8 ++++--
+ tests/NAnt.Compression/NAnt.Compression.build     |    4 ++-
+ tests/NAnt.Console/NAnt.Console.build             |    4 ++-
+ tests/NAnt.Core/NAnt.Core.build                   |    4 ++-
+ tests/NAnt.DotNet/NAnt.DotNet.build               |    4 ++-
+ tests/NAnt.MSNet/NAnt.MSNet.build                 |    4 ++-
+ tests/NAnt.SourceControl/NAnt.SourceControl.build |    4 ++-
+ tests/NAnt.VSNet/NAnt.VSNet.build                 |    4 ++-
+ tests/NAnt.VisualCpp/NAnt.VisualCpp.build         |    4 ++-
+ tests/NAnt.Win32/NAnt.Win32.build                 |    4 ++-
+ 17 files changed, 51 insertions(+), 50 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index fad13a2..cd7414b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,4 +1,4 @@
+-# NAnt make makefile for *nix
++#NAnt make makefile for *nix
+ MONO=cli
+ MCS=mono-csc
+ RESGEN=resgen
+@@ -85,7 +85,7 @@ run-test: bootstrap
+ 	$(NANT) $(TARGET_FRAMEWORK) -f:NAnt.build test
+ 	
+ bootstrap/NAnt.exe:
+-	$(MCS) $(DEBUG) -target:exe -define:$(DEFINE) -out:bootstrap${DIRSEP}NAnt.exe -r:bootstrap${DIRSEP}log4net.dll \
++	$(MCS) $(DEBUG) -target:exe -define:$(DEFINE) -out:bootstrap${DIRSEP}NAnt.exe -pkg:log4net \
+ 		-r:System.Configuration.dll -recurse:src${DIRSEP}NAnt.Console${DIRSEP}*.cs src${DIRSEP}CommonAssemblyInfo.cs
+ 
+ 
+@@ -94,16 +94,14 @@ bootstrap: setup bootstrap/NAnt.exe bootstrap/NAnt.Core.dll bootstrap/NAnt.DotNe
+ 
+ setup:
+ 	mkdir -p bootstrap
+-	cp -R lib/ bootstrap/lib
+ 	# Mono loads log4net before privatebinpath is set-up, so we need this in the same directory
+ 	# as NAnt.exe
+-	cp lib/common/neutral/log4net.dll bootstrap
+ 	cp src/NAnt.Console/App.config bootstrap/NAnt.exe.config
+ 
+ bootstrap/NAnt.Core.dll:
+ 	$(RESGEN)  src/NAnt.Core/Resources/Strings.resx bootstrap/NAnt.Core.Resources.Strings.resources
+ 	$(MCS) $(DEBUG) -target:library -warn:0 -define:$(DEFINE) -out:bootstrap/NAnt.Core.dll -debug \
+-		-resource:bootstrap/NAnt.Core.Resources.Strings.resources -r:lib${DIRSEP}common${DIRSEP}neutral${DIRSEP}log4net.dll \
++		-resource:bootstrap/NAnt.Core.Resources.Strings.resources -pkg:log4net \
+ 		-r:System.Web.dll -recurse:src${DIRSEP}NAnt.Core${DIRSEP}*.cs src${DIRSEP}CommonAssemblyInfo.cs
+ 
+ bootstrap/NAnt.DotNetTasks.dll:
+@@ -115,7 +113,7 @@ bootstrap/NAnt.DotNetTasks.dll:
+ 
+ bootstrap/NAnt.CompressionTasks.dll:
+ 	$(MCS) $(DEBUG) -target:library -warn:0 -define:$(DEFINE) -out:bootstrap/NAnt.CompressionTasks.dll \
+-		-r:./bootstrap/NAnt.Core.dll -r:bootstrap/lib/common/neutral/ICSharpCode.SharpZipLib.dll \
++		-r:./bootstrap/NAnt.Core.dll -r:ICSharpCode.SharpZipLib.dll \
+ 		-recurse:src${DIRSEP}NAnt.Compression${DIRSEP}*.cs src${DIRSEP}CommonAssemblyInfo.cs
+ 
+ bootstrap/NAnt.Win32Tasks.dll:
+diff --git a/NAnt.build b/NAnt.build
+index bccb09a..1d4c66d 100644
+--- a/NAnt.build
++++ b/NAnt.build
+@@ -41,7 +41,6 @@
+         <include name="NAnt.DotNet/NAnt.DotNet.build" />
+         <include name="NAnt.Compression/NAnt.Compression.build" />
+         <include name="NAnt.NUnit/NAnt.NUnit.build" />
+-        <include name="NAnt.SourceControl/NAnt.SourceControl.build" />
+         <include name="NAnt.MSNet/NAnt.MSNet.build" />
+         <include name="NAnt.Win32/NAnt.Win32.build" />
+         <include name="NAnt.VisualCpp/NAnt.VisualCpp.build" />
+@@ -51,7 +50,6 @@
+     <fileset id="ext.core.tests" basedir="tests">
+         <include name="NAnt.DotNet/NAnt.DotNet.build" />
+         <include name="NAnt.Compression/NAnt.Compression.build" />
+-        <include name="NAnt.SourceControl/NAnt.SourceControl.build" />
+         <include name="NAnt.MSNet/NAnt.MSNet.build" />
+         <include name="NAnt.Win32/NAnt.Win32.build" />
+         <include name="NAnt.VisualCpp/NAnt.VisualCpp.build" />
+diff --git a/src/NAnt.Compression/NAnt.Compression.build b/src/NAnt.Compression/NAnt.Compression.build
+index 9fe2c41..98c7c1b 100644
+--- a/src/NAnt.Compression/NAnt.Compression.build
++++ b/src/NAnt.Compression/NAnt.Compression.build
+@@ -17,7 +17,7 @@
+             </sources>
+             <references basedir="${build.dir}/bin">
+                 <include name="NAnt.Core.dll" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','ICSharpCode.SharpZipLib.dll')}" />
++                <include name="ICSharpCode.SharpZipLib.dll" />
+             </references>
+             <resources>
+                 <include name="*.resx"/>
+diff --git a/src/NAnt.Console/NAnt.Console.build b/src/NAnt.Console/NAnt.Console.build
+index bd11352..57af676 100644
+--- a/src/NAnt.Console/NAnt.Console.build
++++ b/src/NAnt.Console/NAnt.Console.build
+@@ -32,10 +32,12 @@
+                 <include name="../CommonAssemblyInfo.cs" />
+             </sources>
+             <references>
+-                <include name="${build.dir}/bin/log4net.dll" />
+                 <include name="System.Configuration.dll" />
+                 <include name="System.Xml.dll" />
+             </references>
++            <pkg-references>
++                <package name="log4net"/>
++            </pkg-references>
+             <resources>
+                 <include name="*.resx"/>
+             </resources>
+diff --git a/src/NAnt.Core/NAnt.Core.build b/src/NAnt.Core/NAnt.Core.build
+index f6153c4..2d7192e 100644
+--- a/src/NAnt.Core/NAnt.Core.build
++++ b/src/NAnt.Core/NAnt.Core.build
+@@ -27,9 +27,11 @@
+                 <include name="Resources/**/*" />
+             </resources>
+             <references>
+-                <include name="${build.dir}/bin/log4net.dll"/>
+                 <include name="System.Web.dll"/>
+             </references>
++            <pkg-references>
++                <package name="log4net"/>
++            </pkg-references>
+         </csc>
+     </target>
+ </project>
+diff --git a/src/NAnt.DotNet/NAnt.DotNet.build b/src/NAnt.DotNet/NAnt.DotNet.build
+index 7c6bea9..12cf326 100644
+--- a/src/NAnt.DotNet/NAnt.DotNet.build
++++ b/src/NAnt.DotNet/NAnt.DotNet.build
+@@ -22,8 +22,8 @@
+             </sources>
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','NDoc.ExtendedUI.dll')}" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','NDoc.Core.dll')}" />
++                <include name="/usr/lib/ndoc-1.3/NDoc.ExtendedUI.dll" />
++                <include name="/usr/lib/ndoc-1.3/NDoc.Core.dll" />
+             </references>
+             <resources prefix="NAnt.DotNet" dynamicprefix="true">
+                 <include name="Resources/**/*" />
+diff --git a/src/NAnt.NUnit/NAnt.NUnit.build b/src/NAnt.NUnit/NAnt.NUnit.build
+index f4aba89..b37a560 100644
+--- a/src/NAnt.NUnit/NAnt.NUnit.build
++++ b/src/NAnt.NUnit/NAnt.NUnit.build
+@@ -18,27 +18,9 @@
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+             </references>
+-        </csc>
+-        <csc target="library" define="${current.build.defines}" warnaserror="${build.warnaserror}" debug="${build.debug}" output="${build.dir}/bin/NAnt.NUnit1Tasks.dll" doc="${build.dir}/bin/NAnt.NUnit1Tasks.xml">
+-            <nowarn>
+-                <!-- do not report warnings for missing XML comments -->
+-                <warning number="1591" />
+-                 <!-- workaround for Mono bug #61902: do not report deprecation warnings -->
+-                <warning number="0618" if="${framework::get-family(framework::get-target-framework()) == 'mono'}" />
+-            </nowarn>
+-            <sources>
+-                <include name="NUnit1/**/*.cs"/>
+-                <!-- common assembly-level attributes -->
+-                <include name="../CommonAssemblyInfo.cs" />
+-            </sources>
+-            <references>
+-                <include name="${build.dir}/bin/NAnt.Core.dll" />
+-                <include name="${build.dir}/bin/NAnt.NUnit.dll" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','NUnitCore.dll')}" />
+-            </references>
+-            <resources>
+-                <include name="*.resx"/>
+-            </resources>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+         <csc target="library" define="${current.build.defines}" warnaserror="${build.warnaserror}" debug="${build.debug}" output="${build.dir}/bin/NAnt.NUnit2Tasks.dll" doc="${build.dir}/bin/NAnt.NUnit2Tasks.xml">
+             <nowarn>
+@@ -54,11 +36,10 @@
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.NUnit.dll" />
+                 <include name="${build.dir}/bin/NAnt.DotNetTasks.dll" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','nunit.framework.dll')}" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','nunit.core.dll')}" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','nunit.util.dll')}" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','nunit.core.interfaces.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+ </project>
+diff --git a/src/NAnt.SourceControl/NAnt.SourceControl.build b/src/NAnt.SourceControl/NAnt.SourceControl.build
+index 4f897e0..c868a54 100644
+--- a/src/NAnt.SourceControl/NAnt.SourceControl.build
++++ b/src/NAnt.SourceControl/NAnt.SourceControl.build
+@@ -16,11 +16,13 @@
+                 <include name="../CommonAssemblyInfo.cs" />
+             </sources>
+             <references>
+-                <include name="${build.dir}/bin/log4net.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','ICSharpCode.SharpZipLib.dll')}" />
+-                <include name="${nant::scan-probing-paths(build.dir + '/bin','ICSharpCode.SharpCvsLib.dll')}" />
++                <include name="ICSharpCode.SharpZipLib.dll" />
++                <include name="ICSharpCode.SharpCvsLib.dll" />
+             </references>
++            <pkg-references>
++                <package name="log4net"/>
++            </pkg-references>
+             <resources>
+                 <include name="*.resx"/>
+             </resources>
+diff --git a/tests/NAnt.Compression/NAnt.Compression.build b/tests/NAnt.Compression/NAnt.Compression.build
+index ec104e8..612c41a 100644
+--- a/tests/NAnt.Compression/NAnt.Compression.build
++++ b/tests/NAnt.Compression/NAnt.Compression.build
+@@ -21,8 +21,10 @@
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build">
+diff --git a/tests/NAnt.Console/NAnt.Console.build b/tests/NAnt.Console/NAnt.Console.build
+index 4e2e27b..78aa4a7 100644
+--- a/tests/NAnt.Console/NAnt.Console.build
++++ b/tests/NAnt.Console/NAnt.Console.build
+@@ -22,8 +22,10 @@
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build">
+diff --git a/tests/NAnt.Core/NAnt.Core.build b/tests/NAnt.Core/NAnt.Core.build
+index b93116c..bc032b4 100644
+--- a/tests/NAnt.Core/NAnt.Core.build
++++ b/tests/NAnt.Core/NAnt.Core.build
+@@ -22,9 +22,11 @@
+             </sources>
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+                 <include name="${nant::scan-probing-paths('netDumbster.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+             <resources failonempty="true" basedir="Resources" dynamicprefix="true" prefix="XML:">
+                 <include name="**/*.xml"/>
+                 <include name="**/*.build"/>
+diff --git a/tests/NAnt.DotNet/NAnt.DotNet.build b/tests/NAnt.DotNet/NAnt.DotNet.build
+index 5389240..e38931a 100644
+--- a/tests/NAnt.DotNet/NAnt.DotNet.build
++++ b/tests/NAnt.DotNet/NAnt.DotNet.build
+@@ -29,8 +29,10 @@
+                 <include name="${build.dir}/bin/NAnt.Core.dll"/>
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll"/>
+                 <include name="${build.dir}/bin/${project::get-name()}Tasks.dll"/>
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build">
+diff --git a/tests/NAnt.MSNet/NAnt.MSNet.build b/tests/NAnt.MSNet/NAnt.MSNet.build
+index 9baf7ac..9a4c7ff 100644
+--- a/tests/NAnt.MSNet/NAnt.MSNet.build
++++ b/tests/NAnt.MSNet/NAnt.MSNet.build
+@@ -21,8 +21,10 @@
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build" if="${framework::get-family(framework::get-target-framework()) == 'net'}">
+diff --git a/tests/NAnt.SourceControl/NAnt.SourceControl.build b/tests/NAnt.SourceControl/NAnt.SourceControl.build
+index cc8d2e9..be45766 100644
+--- a/tests/NAnt.SourceControl/NAnt.SourceControl.build
++++ b/tests/NAnt.SourceControl/NAnt.SourceControl.build
+@@ -21,8 +21,10 @@
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build">
+diff --git a/tests/NAnt.VSNet/NAnt.VSNet.build b/tests/NAnt.VSNet/NAnt.VSNet.build
+index 7a84c7c..fa0f661 100644
+--- a/tests/NAnt.VSNet/NAnt.VSNet.build
++++ b/tests/NAnt.VSNet/NAnt.VSNet.build
+@@ -22,8 +22,10 @@
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+                 <include name="${build.dir}/bin/NAnt.VisualCpp.Tests.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build" if="${platform::is-windows()}">
+diff --git a/tests/NAnt.VisualCpp/NAnt.VisualCpp.build b/tests/NAnt.VisualCpp/NAnt.VisualCpp.build
+index 8d78a8d..39c8d01 100644
+--- a/tests/NAnt.VisualCpp/NAnt.VisualCpp.build
++++ b/tests/NAnt.VisualCpp/NAnt.VisualCpp.build
+@@ -22,8 +22,10 @@
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+                 <include name="${build.dir}/bin/NAnt.VisualCppTasks.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build" if="${platform::is-windows()}">
+diff --git a/tests/NAnt.Win32/NAnt.Win32.build b/tests/NAnt.Win32/NAnt.Win32.build
+index 48099a7..5d1b66b 100644
+--- a/tests/NAnt.Win32/NAnt.Win32.build
++++ b/tests/NAnt.Win32/NAnt.Win32.build
+@@ -21,8 +21,10 @@
+             <references>
+                 <include name="${build.dir}/bin/NAnt.Core.dll" />
+                 <include name="${build.dir}/bin/NAnt.Core.Tests.dll" />
+-                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
+             </references>
++            <pkg-references>
++                <package name="nunit"/>
++            </pkg-references>
+         </csc>
+     </target>
+     <target name="test" depends="build" if="${platform::is-windows()}">
+-- 

@@ -1,0 +1,29 @@
+From: Debian CLI Applications Team <pkg-cli-apps-team@lists.alioth.debian.org>
+Date: Sat, 26 May 2012 12:43:20 +0200
+Subject: 001-nant-task-cs-InitializeElement
+
+@DPATCH@
+---
+ src/NAnt.Core/Task.cs |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/NAnt.Core/Task.cs b/src/NAnt.Core/Task.cs
+index 782d8d5..8121199 100644
+--- a/src/NAnt.Core/Task.cs
++++ b/src/NAnt.Core/Task.cs
+@@ -426,7 +426,6 @@ namespace NAnt.Core {
+         }
+ 
+         /// <summary>Initializes the task.</summary>
+-        [Obsolete("Deprecated. Use Initialize() instead")]
+         protected virtual void InitializeTask(XmlNode taskNode) {
+         }
+ 
+@@ -461,4 +460,4 @@ namespace NAnt.Core {
+ 
+         #endregion Protected Instance Methods
+     }
+-}
+\ No newline at end of file
++}
+-- 

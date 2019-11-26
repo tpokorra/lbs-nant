@@ -1,0 +1,23 @@
+From: Debian CLI Applications Team <pkg-cli-apps-team@lists.alioth.debian.org>
+Date: Sat, 26 May 2012 12:43:20 +0200
+Subject: 002-nant-load-partial-name
+
+@DPATCH@
+---
+ src/NAnt.DotNet/Tasks/ScriptTask.cs |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/NAnt.DotNet/Tasks/ScriptTask.cs b/src/NAnt.DotNet/Tasks/ScriptTask.cs
+index 287e9de..81e635c 100644
+--- a/src/NAnt.DotNet/Tasks/ScriptTask.cs
++++ b/src/NAnt.DotNet/Tasks/ScriptTask.cs
+@@ -517,7 +517,7 @@ namespace NAnt.DotNet.Tasks {
+         #region Private Static Methods
+ 
+         private static CodeDomProvider CreateCodeDomProvider(string typeName, string assemblyName) {
+-            Assembly providerAssembly = Assembly.LoadWithPartialName(assemblyName);
++            Assembly providerAssembly = Assembly.Load(assemblyName);
+             if (providerAssembly == null) {
+                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
+                     ResourceUtils.GetString("NA2037"), assemblyName));
+-- 

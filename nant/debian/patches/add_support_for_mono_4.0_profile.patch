@@ -1,0 +1,58 @@
+From: Debian CLI Applications Team <pkg-cli-apps-team@lists.alioth.debian.org>
+Date: Sat, 26 May 2012 12:53:33 +0200
+Subject: add_support_for_mono_4.0_profile
+
+===================================================================
+---
+ src/NAnt.MSBuild/NAnt.MSBuild.build |   28 +++-------------------------
+ 1 file changed, 3 insertions(+), 25 deletions(-)
+
+diff --git a/src/NAnt.MSBuild/NAnt.MSBuild.build b/src/NAnt.MSBuild/NAnt.MSBuild.build
+index c2c4b7c..836da9f 100644
+--- a/src/NAnt.MSBuild/NAnt.MSBuild.build
++++ b/src/NAnt.MSBuild/NAnt.MSBuild.build
+@@ -7,25 +7,12 @@
+             * build.warnaserror     - (true|false) treat warnings as errors
+             * current.build.defines - framework-specific build defines
+     -->
+-    <target name="build" if="${framework::exists('net-2.0') or framework::exists('mono-2.0')}">
+-        <!-- save original target framework -->
+-        <property name="original.targetframework" value="${framework::get-target-framework()}" />
+-
+-        <!-- modify target framework to .NET 2.0 or Mono 2.0 -->
+-        <if test="${framework::exists('net-2.0')}">
+-            <!-- modify target framework to .NET 2.0 -->
+-            <property name="nant.settings.currentframework" value="net-2.0" />
+-        </if>
+-        <if test="${not(framework::exists('net-2.0'))}">
+-            <!-- modify target framework to Mono 2.0 -->
+-            <property name="nant.settings.currentframework" value="mono-2.0" />
+-        </if>
+-
++    <target name="build">
+         <!-- ensure build directory exists -->
+-        <mkdir dir="${build.dir}/bin/extensions/common/2.0" />
++        <mkdir dir="${build.dir}/bin/extensions/neutral/debian" />
+ 
+         <!-- build main assembly -->
+-        <csc target="library" define="${current.build.defines}" warnaserror="${build.warnaserror}" debug="${build.debug}" output="${build.dir}/bin/extensions/common/2.0/${project::get-name()}.dll" doc="${build.dir}/bin/extensions/common/2.0/${project::get-name()}.xml">
++        <csc target="library" define="${current.build.defines}" warnaserror="${build.warnaserror}" debug="${build.debug}" output="${build.dir}/bin/extensions/neutral/debian/${project::get-name()}.dll" doc="${build.dir}/bin/extensions/neutral/debian/${project::get-name()}.xml">
+             <sources>
+                 <include name="**/*.cs" />
+                 <!-- common assembly-level attributes -->
+@@ -44,14 +31,5 @@
+             </resources>
+         </csc> 
+ 		
+-		<!-- copy NAnt.MSBuild.dll to extensions/common/4.0 -->
+-        <copy todir="${build.dir}/bin/extensions/common/4.0/">
+-            <fileset basedir="${build.dir}/bin/extensions/common/2.0">
+-                <include name="${project::get-name()}.*" />
+-            </fileset>
+-        </copy>
+-
+-        <!-- restore original target framework -->
+-        <property name="nant.settings.currentframework" value="${original.targetframework}" />
+     </target>
+ </project>
+-- 
