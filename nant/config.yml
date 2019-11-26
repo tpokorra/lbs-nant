@@ -1,5 +1,4 @@
 lbs:
   source:
     download:
-      nant-0.92-src.tar.gz: "http://sourceforge.net/projects/nant/files/nant/0.92/nant-0.92-src.tar.gz/download"
       nant_0.92~rc1+dfsg.orig.tar.gz: "https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/nant/0.92~rc1+dfsg-6/nant_0.92~rc1+dfsg.orig.tar.gz"
