@@ -4,6 +4,8 @@ export DH_VERBOSE=1
 MAKE_FLAGS = MONO=/usr/bin/cli MCS=/usr/bin/mono-csc
 
 override_dh_auto_build:
+	# to avoid: error CS0433: The imported type `System.Xml.XmlNode' is defined multiple times
+	rm -f /usr/lib/mono/4.5-api/System.dll
 	$(MAKE) $(MAKE_FLAGS)
 
 override_dh_auto_install:
