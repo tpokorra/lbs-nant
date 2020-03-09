@@ -11,3 +11,4 @@ use_mono_mcs_common_compiler_infrastructure.patch
 9d7f1937978c17be116292352f124b1de83518e9..721a715ff411fdc385306676f1104eb0608c3dc3.diff
 set-target-to-4.5.patch
 0001-Add-initial-support-for-mono-4.5-on-unix.-Untested.patch
+define_mono-4.5-api.patch

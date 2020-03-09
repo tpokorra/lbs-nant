@@ -1,0 +1,161 @@
+Index: nant/Makefile
+===================================================================
+--- nant.orig/Makefile
++++ nant/Makefile
+@@ -2,10 +2,10 @@
+ MONO=cli
+ MCS=mono-csc
+ RESGEN=resgen
+-TARGET=mono-4.5
++TARGET=mono-4.5-api
+ 
+ # Contains a list of acceptable targets used to build NAnt
+-VALID_TARGETS := mono-2.0 mono-3.5 mono-4.0 mono-4.5 net-2.0 net-3.5 net-4.0 net-4.5
++VALID_TARGETS := mono-2.0 mono-3.5 mono-4.0 mono-4.5 mono-4.5-api net-2.0 net-3.5 net-4.0 net-4.5
+ 
+ ifndef DIRSEP
+ ifeq ($(OS),Windows_NT)
+@@ -60,6 +60,11 @@ ifeq ($(findstring 4.5,$(SELECTED_TARGET
+ DEFINE := $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5
+ endif
+ 
++# Similar to mono-4.5 (only available for mono-4.5-api)
++ifeq ($(findstring 4.5,$(SELECTED_TARGET)),4.5-api)
++DEFINE := $(DEFINE),NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5
++endif
++
+ # If TARGET var is invalid, throw an error
+ else
+ $(error Specified target "$(TARGET)" is not valid)
+Index: nant/NAnt.build
+===================================================================
+--- nant.orig/NAnt.build
++++ nant/NAnt.build
+@@ -785,6 +785,12 @@
+         <property name="link.sdkdoc.version" value="SDK_v1_1" />
+         <property name="link.sdkdoc.web" value="true" />
+     </target>
++    <target name="set-mono-4.5-api-framework-configuration">
++        <property name="nant.settings.currentframework" value="mono-4.5-api" />
++        <property name="current.build.defines" value="${build.defines}MONO,NET_1_0,NET_1_1,NET_2_0,NET_3_5,NET_4_0,NET_4_5,ONLY_4_5" dynamic="true" />
++        <property name="link.sdkdoc.version" value="SDK_v1_1" />
++        <property name="link.sdkdoc.web" value="true" />
++    </target>
+ 
+     <!-- install targets -->
+ 
+Index: nant/src/NAnt.Console/App.config
+===================================================================
+--- nant.orig/src/NAnt.Console/App.config
++++ nant/src/NAnt.Console/App.config
+@@ -3092,6 +3092,110 @@
+                     </tasks>
+                 </framework>
+                 <framework
++                    name="mono-4.5-api"
++                    family="mono"
++                    version="4.5"
++                    description="Mono .NET 4.5-api Profile"
++                    sdkdirectory="${toolDirectory}"
++                    frameworkdirectory="${toolDirectory}"
++                    frameworkassemblydirectory="${path::combine(prefix, 'lib/mono/4.5-api')}"
++                    clrversion="4.0.30319"
++                    clrtype="Desktop"
++                    vendor="Mono"
++                    >
++                    <runtime>
++                        <probing-paths>
++                            <directory name="lib/mono/2.0" />
++                            <directory name="lib/mono/neutral" />
++                            <directory name="lib/common/2.0" />
++                            <directory name="lib/common/neutral" />
++                        </probing-paths>
++                        <modes>
++                            <auto>
++                                <engine program="${path::combine(prefix, 'bin/mono')}" />
++                            </auto>
++                            <strict>
++                                <engine program="${path::combine(prefix, 'bin/mono')}">
++                                    <arg value="--runtime=v4.0.30319" />
++                                </engine>
++                            </strict>
++                        </modes>
++                    </runtime>
++                    <reference-assemblies basedir="${path::combine(prefix, 'lib/mono/4.5-api')}">
++                        <include name="*.dll" />
++                    </reference-assemblies>
++                    <task-assemblies>
++                        <!-- include Mono version-neutral assemblies -->
++                        <include name="extensions/mono/neutral/**/*.dll" />
++                        <!-- include Mono 2.0 specific assemblies -->
++                        <include name="extensions/mono/2.0/**/*.dll" />
++                        <!-- include .NET 2.0 specific assemblies -->
++                        <include name="extensions/common/2.0/**/*.dll" />
++                    </task-assemblies>
++                    <tool-paths>
++                        <directory name="${toolDirectory}" />
++                        <directory name="${path::combine(prefix, 'lib/mono/4.5-api')}" />
++                        <!-- unmanaged tools -->
++                        <directory name="${prefix}/bin" />
++                    </tool-paths>
++                    <project>
++                        <if test="${not pkg-config::exists('mono')}">
++                            <fail>Unable to locate 'mono' module using pkg-config. Download the Mono development packages from http://www.mono-project.com/downloads/.</fail>
++                        </if>
++                        <property name="resgen.supportsexternalfilereferences" value="false" />
++                        <property name="prefix" value="${pkg-config::get-variable('mono', 'prefix')}" />
++                        <property name="toolDirectory" value="${path::combine(prefix, 'lib/mono/4.5')}" />
++                        <if test="${not(pkg-config::is-atleast-version('mono', '3.0'))}">
++                            <property name="csc.tool" value="dmcs"/>
++                            <property name="mcs.sdk" value="0"/>
++                        </if>
++                        <if test="${pkg-config::is-atleast-version('mono', '3.0')}">
++                            <property name="csc.tool" value="mcs"/>
++                            <property name="mcs.sdk" value="4.5"/>
++                        </if>
++                    </project>
++                    <tasks>
++                        <task name="al">
++                            <attribute name="managed">true</attribute>
++                        </task>
++                        <task name="csc">
++                            <attribute name="exename">${csc.tool}</attribute>
++                            <attribute name="mcssdk">${mcs.sdk}</attribute>
++                            <attribute name="managed">true</attribute>
++                            <attribute name="langversion">linq</attribute>
++                            <attribute name="supportspackagereferences">true</attribute>
++                            <attribute name="supportsnowarnlist">true</attribute>
++                            <attribute name="supportsdocgeneration">true</attribute>
++                            <attribute name="supportskeycontainer">true</attribute>
++                            <attribute name="supportskeyfile">true</attribute>
++                            <attribute name="supportsdelaysign">true</attribute>
++                            <attribute name="supportslangversion">true</attribute>
++                        </task>
++                        <task name="jsc">
++                            <attribute name="exename">mjs</attribute>
++                            <attribute name="managed">strict</attribute>
++                        </task>
++                        <task name="vbc">
++                            <attribute name="exename">vbnc</attribute>
++                            <attribute name="managed">true</attribute>
++                        </task>
++                        <task name="resgen">
++                            <attribute name="managed">true</attribute>
++                            <attribute name="supportsexternalfilereferences">true</attribute>
++                        </task>
++                        <task name="delay-sign">
++                            <attribute name="exename">sn</attribute>
++                            <attribute name="managed">true</attribute>
++                        </task>
++                        <task name="license">
++                            <attribute name="hascommandlinecompiler">false</attribute>
++                        </task>
++                        <task name="ilasm">
++                            <attribute name="managed">true</attribute>
++                        </task>
++                    </tasks>
++                </framework>
++                <framework
+                     name="moonlight-2.0" 
+                     family="moonlight" 
+                     version="2.0"

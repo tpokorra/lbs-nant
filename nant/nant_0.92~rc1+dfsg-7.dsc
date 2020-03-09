@@ -1,11 +1,11 @@
 -----BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hash: SHA512
 
 Format: 3.0 (quilt)
 Source: nant
 Binary: nant
 Architecture: all
-Version: 0.92~rc1+dfsg-6
+Version: 0.92~rc1+dfsg-7
 Maintainer: Debian CLI Applications Team <pkg-cli-apps-team@lists.alioth.debian.org>
 Uploaders: David Paleino <dapal@debian.org>
 Homepage: http://nant.sourceforge.net/
@@ -18,22 +18,22 @@ Package-List:
  nant deb devel optional arch=all
 Checksums-Sha1:
  f0bc96b09ce262addfde04e8b41ff4f739d67b6a 1007130 nant_0.92~rc1+dfsg.orig.tar.gz
- c677338c4d8d438f9762109830201098b2abd0cc 26764 nant_0.92~rc1+dfsg-6.debian.tar.xz
+ 61e12fa663eead6ea0168085565e3338fd9a9bc6 26960 nant_0.92~rc1+dfsg-7.debian.tar.xz
 Checksums-Sha256:
  2186a32fb239f193b401c2d61b544a253597ca51b44cb01b9450f68bf5db9317 1007130 nant_0.92~rc1+dfsg.orig.tar.gz
- 45f995f6721b8d6bfbdd0f108ad66770399fed6c36c7ec9c4eac7e8dde7833bf 26764 nant_0.92~rc1+dfsg-6.debian.tar.xz
+ 9b94f50edc81841b1265906094ac676bd2408d4f6edf79985d4d1bb336947249 26960 nant_0.92~rc1+dfsg-7.debian.tar.xz
 Files:
  ee89f8a61efa46f1e443339a734e51dd 1007130 nant_0.92~rc1+dfsg.orig.tar.gz
- f372e1c7a470cb88f6e1cd9182117b6b 26764 nant_0.92~rc1+dfsg-6.debian.tar.xz
+ f48c1ccf3ddc21fa593811a199efb5db 26960 nant_0.92~rc1+dfsg-7.debian.tar.xz
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iQEcBAEBAgAGBQJWcU+uAAoJEMkPnLkOH60MhNQH/25dSYwYm09T0eLGnokt9oAv
-l01mFnvYwI+R+nd7uFSxYLPKGt+UeF60jp4uWynMWi7IMVGT1dOpbrzpHgL+e9Qh
-kBSHsgc7bxP/0dk6TZUIn0d/tMiso4UugGWytho+ia4Wt7rI9KR/7hiBGXZc/ULg
-mtcCevJCmrgDupFMvpLJBY9XhhSqPigYEK4HG3trGx7ej09Qrgwx2jMXH8j4w0/Z
-HvJU57GMwbwzwlAaC++sk6IO2H2b8NMyTq5CT371HYp6OFFsT5EG7OmQnEGgPOoY
-ufoUHEvTLAwa4komWkSK+0Bo2bF8k03phrG4d6dyaEC05nVbrvTRgWK8X6VTyUY=
-=nv0E
+iQFLBAEBCgA1FiEEwQsMQnGBo0sbxf7dyQ+cuQ4frQwFAl5VN/cXHGpvc2hpZWxk
+QG1pY3Jvc29mdC5jb20ACgkQyQ+cuQ4frQx7Ggf/dHF/LBqm6wUgJMBjgU584T5o
+wAMYzzHYqaAJ/aJECkhXUlvMM2v3yBFmclcS+GQ1kjjyZrZeLgD50DHdYD+DjWeZ
+5Arx8YMBaLyTCAplK8k8iYmV85qHzrO+dDsaUOohpFWPl1tU+QQUAremp3hbHg7A
+EVeNEW/JsRZE7okoUwIncTC9ZyleiTj73txT2ZPw6Eg5T12gaL+tdCSBzqwYAKne
+UhS2XYpbxLo2kSh4zfMHn6PkfXgVeMoGP+1qvucDwPg2CAZNq9MzSx20ZHZUEozq
+UTBEhnXa6D7aqkpdRHp84iMZ0iLVAVibCJk1Z/t78nV4lLUIytxWLVLvV3WAKw==
+=s1Mh
 -----END PGP SIGNATURE-----
