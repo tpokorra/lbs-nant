@@ -2,3 +2,7 @@ lbs:
   centos:
     '7':
       repos: ['http://download.mono-project.com/repo/centos/', 'https://copr.fedoraproject.org/coprs/tpokorra/mono/repo/epel-7/tpokorra-mono-epel-7.repo']
+  debian:
+    stretch:
+      repos:
+        mono: "deb https://download.mono-project.com/repo/debian stable-stretch main"
