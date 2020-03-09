@@ -6,3 +6,4 @@ lbs:
     stretch:
       repos:
         mono: "deb https://download.mono-project.com/repo/debian stable-stretch main"
+      keys: ['3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF']
