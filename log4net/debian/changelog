@@ -1,3 +1,9 @@
+log4net (1.2.10+dfsg-10) unstable; urgency=medium
+
+  * build for Debian Bookworm
+
+ -- Timotheus Pokorra (LBS auto signing) <release@solidcharity.com> Thu, 07 Dec 2023 20:00:00 +0000
+
 log4net (1.2.10+dfsg-9) unstable; urgency=medium
 
   * add build-indep target (Closes: #999313)
