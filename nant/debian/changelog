@@ -1,3 +1,9 @@
+nant (0.92~rc1+dfsg-8) unstable; urgency=medium
+
+  * build for Debian Bookworm
+
+ -- Timotheus Pokorra (LBS auto signing) <release@solidcharity.com> Thu, 07 Dec 2023 20:00:00 +0000
+
 nant (0.92~rc1+dfsg-7) unstable; urgency=medium
 
   * [48d668e] Fix build on newer Mono w/ -api facades. Thanks to Sean Champ.
